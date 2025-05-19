@@ -10,6 +10,17 @@ Det fungerar eftersom all kod som ska köras kontinuerligt körs i Dockercontain
 docker compose down
 ```
 
+## Tillgång till projekt
+Vissa projektgrupper får tillgång till att köra vissa kommandon som annars kräver adminprivilegier, vanligtvis att öppna en shell i motsvarande docker-container.
+Så här ges tillgång:
+- Se till att det finns en grupp, `samplegroup`, och att rätt användare är tillagda i gruppen.
+- I filen `/etc/sudoers`, skriv vilka kommandon som gruppen får köra. Till exempel:
+```
+%samplegroup ALL=(ALL) NOPASSWD: samplecommand
+%samplegroup ALL=(ALL) NOPASSWD: /usr/bin/docker exec -it samplecontainer sh
+```
+- Lägg till skripts i mappen `/fysikmotorn/user-scripts/samplegroup/` motsvarande kommandona ovan.
+
 ## Backups
 För att misstag ska kunna rättas till, och att saker inte ska försvinna, har servern även utrustats med backupskripts! Dessa förlitar sig på programmet `rclone` för att ladda upp projektens data (men inte hela projektet i och med att de finns på GitHub). Det kan sedan laddas ner igen lätt.
 
