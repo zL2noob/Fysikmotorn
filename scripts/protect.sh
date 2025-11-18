@@ -61,6 +61,8 @@ TO_PROTECT=(
 	"services/bittan_fysikalen/swish_certificates"
 	"services/bittan_fysikalen/gmail_creds"
 	"services/bittan_fysikalen/logs"
+
+	"services/valkompassen/.env"
 );
 
 chmod o-w,o+r "${TO_WRITE_PROTECT[@]}"
