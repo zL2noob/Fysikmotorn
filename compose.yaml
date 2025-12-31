@@ -15,8 +15,8 @@ services:
       - sangbok
       - kons-count
       - cyberfohs
-      - bittan-marke-server
-      - bittan-fysikalen-server
+        # - bittan-marke-server
+        # - bittan-fysikalen-server
       - fnkth.se-flask
         # - valkompassen
     volumes:
@@ -50,10 +50,10 @@ services:
       - ./services/misc/logo.png:/f.kth.se/logo.png
       - ./services/misc/robots.txt:/f.kth.se/robots.txt
 
-      - ./services/bittan_marke/static:/f.kth.se/bittan-marke-django/static
-      - ./services/bittan_marke_frontend:/f.kth.se/bittan-marke
+        #- ./services/bittan_marke/static:/f.kth.se/bittan-marke-django/static
+        #- ./services/bittan_marke_frontend:/f.kth.se/bittan-marke
 
-      - ./services/bittan_fysikalen/static:/fysikalen.se/bittan-fysikalen/static
+        #- ./services/bittan_fysikalen/static:/fysikalen.se/bittan-fysikalen/static
         #- ./services/bittan_fysikalen_frontend:/fysikalen.se/biljetter
 
   # Provides SSL certificates
@@ -257,102 +257,102 @@ services:
     init: true
 
   ## bittan_marke
-  bittan-marke-server:
-    container_name: bittan-marke-server
-    image: ghcr.io/fysiksektionen/bittan-backend:${BITTAN_MARKE_VERSION}
-    deploy:
-      resources:
-        limits:
-          cpus: '0.15'
-    env_file: ./services/bittan_marke/bittan_marke_server.env
-    volumes:
-      - ./services/bittan_marke/static:/bittan/static
-      - ./services/bittan_marke/swish_certificates:/bittan/certificates
-      - ./services/bittan_marke/gmail_creds:/bittan/gmail_creds
-      - ./services/bittan_marke/logs:/bittan/logs
-    environment:
-      BITTAN_BACKEND_URL: "https://f.kth.se/bittan-marke-django"
-      BITTAN_FRONTEND_URL: "https://f.kth.se/bittan-marke"
-      ALLOWED_HOSTS: '["f.kth.se", "bittan-marke-server"]'
-      DATABASE_HOST: bittan_marke_postgres
-      DATABASE_NAME: bittan_marke_db
-      DATABASE_USER: postgres
-      DATABASE_PORT: 5432
-      SWISH_PEM_FILE_PATH: ./certificates/swish_certificate_202503132004.pem
-      SWISH_KEY_FILE_PATH: ./certificates/MySwishKey.key
-      SWISH_API_URL: https://cpc.getswish.net/swish-cpcapi
-      DEBUG: "False"
-    depends_on:
-      bittan_marke_postgres:
-        condition: service_healthy
+  # bittan-marke-server:
+  #   container_name: bittan-marke-server
+  #   image: ghcr.io/fysiksektionen/bittan-backend:${BITTAN_MARKE_VERSION}
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.15'
+  #   env_file: ./services/bittan_marke/bittan_marke_server.env
+  #   volumes:
+  #     - ./services/bittan_marke/static:/bittan/static
+  #     - ./services/bittan_marke/swish_certificates:/bittan/certificates
+  #     - ./services/bittan_marke/gmail_creds:/bittan/gmail_creds
+  #     - ./services/bittan_marke/logs:/bittan/logs
+  #   environment:
+  #     BITTAN_BACKEND_URL: "https://f.kth.se/bittan-marke-django"
+  #     BITTAN_FRONTEND_URL: "https://f.kth.se/bittan-marke"
+  #     ALLOWED_HOSTS: '["f.kth.se", "bittan-marke-server"]'
+  #     DATABASE_HOST: bittan_marke_postgres
+  #     DATABASE_NAME: bittan_marke_db
+  #     DATABASE_USER: postgres
+  #     DATABASE_PORT: 5432
+  #     SWISH_PEM_FILE_PATH: ./certificates/swish_certificate_202503132004.pem
+  #     SWISH_KEY_FILE_PATH: ./certificates/MySwishKey.key
+  #     SWISH_API_URL: https://cpc.getswish.net/swish-cpcapi
+  #     DEBUG: "False"
+  #   depends_on:
+  #     bittan_marke_postgres:
+  #       condition: service_healthy
 
-  bittan_marke_postgres:
-    container_name: bittan_marke_postgres
-    image: postgres
-    deploy:
-      resources:
-        limits:
-          cpus: '0.15'
-    volumes:
-      - ./services/bittan_marke/postgres_data:/var/lib/postgresql/data
-    env_file: ./services/bittan_marke/bittan_marke_postgres.env
-    environment:
-      POSTGRES_DB: bittan_marke_db
-      POSTGRES_USER: postgres
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 1s
-      timeout: 5s
-      retries: 10
+      # bittan_marke_postgres:
+      #   container_name: bittan_marke_postgres
+      #   image: postgres
+      #   deploy:
+      #     resources:
+      #       limits:
+      #         cpus: '0.15'
+      #   volumes:
+      #     - ./services/bittan_marke/postgres_data:/var/lib/postgresql/data
+      #   env_file: ./services/bittan_marke/bittan_marke_postgres.env
+      #   environment:
+      #     POSTGRES_DB: bittan_marke_db
+      #     POSTGRES_USER: postgres
+      #   healthcheck:
+      #     test: ["CMD-SHELL", "pg_isready -U postgres"]
+      #     interval: 1s
+      #     timeout: 5s
+      #     retries: 10
 
   ## bittan_fysikalen
-  bittan-fysikalen-server:
-    container_name: bittan-fysikalen-server
-    image: ghcr.io/fysiksektionen/bittan-backend:${BITTAN_FYSIKALEN_VERSION}
-    deploy:
-      resources:
-        limits:
-          cpus: '0.15'
-    env_file: ./services/bittan_fysikalen/bittan_fysikalen_server.env
-    volumes:
-      - ./services/bittan_fysikalen/static:/bittan/static
-      - ./services/bittan_fysikalen/swish_certificates:/bittan/certificates
-      - ./services/bittan_fysikalen/gmail_creds:/bittan/gmail_creds
-      - ./services/bittan_fysikalen/logs:/bittan/logs
-    environment:
-      BITTAN_BACKEND_URL: "https://fysikalen.se/bittan-fysikalen"
-      BITTAN_FRONTEND_URL: "https://fysikalen.se/biljetter"
-      ALLOWED_HOSTS: '["fysikalen.se", "bittan-fysikalen-server"]'
-      DATABASE_HOST: bittan-fysikalen-postgres
-      DATABASE_NAME: bittan_fysikalen_db
-      DATABASE_USER: postgres
-      DATABASE_PORT: 5432
-      SWISH_PEM_FILE_PATH: ./certificates/swish_certificate_202503132004.pem
-      SWISH_KEY_FILE_PATH: ./certificates/MySwishKey.key
-      SWISH_API_URL: https://cpc.getswish.net/swish-cpcapi
-      DEBUG: "False"
-    depends_on:
-      bittan-fysikalen-postgres:
-        condition: service_healthy
+  # bittan-fysikalen-server:
+  #   container_name: bittan-fysikalen-server
+  #   image: ghcr.io/fysiksektionen/bittan-backend:${BITTAN_FYSIKALEN_VERSION}
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.15'
+  #   env_file: ./services/bittan_fysikalen/bittan_fysikalen_server.env
+  #   volumes:
+  #     - ./services/bittan_fysikalen/static:/bittan/static
+  #     - ./services/bittan_fysikalen/swish_certificates:/bittan/certificates
+  #     - ./services/bittan_fysikalen/gmail_creds:/bittan/gmail_creds
+  #     - ./services/bittan_fysikalen/logs:/bittan/logs
+  #   environment:
+  #     BITTAN_BACKEND_URL: "https://fysikalen.se/bittan-fysikalen"
+  #     BITTAN_FRONTEND_URL: "https://fysikalen.se/biljetter"
+  #     ALLOWED_HOSTS: '["fysikalen.se", "bittan-fysikalen-server"]'
+  #     DATABASE_HOST: bittan-fysikalen-postgres
+  #     DATABASE_NAME: bittan_fysikalen_db
+  #     DATABASE_USER: postgres
+  #     DATABASE_PORT: 5432
+  #     SWISH_PEM_FILE_PATH: ./certificates/swish_certificate_202503132004.pem
+  #     SWISH_KEY_FILE_PATH: ./certificates/MySwishKey.key
+  #     SWISH_API_URL: https://cpc.getswish.net/swish-cpcapi
+  #     DEBUG: "False"
+  #   depends_on:
+  #     bittan-fysikalen-postgres:
+  #       condition: service_healthy
 
-  bittan-fysikalen-postgres:
-    container_name: bittan-fysikalen-postgres
-    image: postgres
-    deploy:
-      resources:
-        limits:
-          cpus: '0.15'
-    volumes:
-      - ./services/bittan_fysikalen/postgres_data:/var/lib/postgresql/data
-    env_file: ./services/bittan_fysikalen/bittan_fysikalen_postgres.env
-    environment:
-      POSTGRES_DB: bittan_fysikalen_db
-      POSTGRES_USER: postgres
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 1s
-      timeout: 5s
-      retries: 10
+  # bittan-fysikalen-postgres:
+  #   container_name: bittan-fysikalen-postgres
+  #   image: postgres
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.15'
+  #   volumes:
+  #     - ./services/bittan_fysikalen/postgres_data:/var/lib/postgresql/data
+  #   env_file: ./services/bittan_fysikalen/bittan_fysikalen_postgres.env
+  #   environment:
+  #     POSTGRES_DB: bittan_fysikalen_db
+  #     POSTGRES_USER: postgres
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U postgres"]
+  #     interval: 1s
+  #     timeout: 5s
+  #     retries: 10
 
   # fnkth.se
   fnkth.se-flask:
